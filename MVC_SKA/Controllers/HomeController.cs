@@ -7,6 +7,10 @@ namespace MVC_SKA.Controllers
 {
     public class HomeController : Controller
     {
+        private Random _random = new Random();
+        private MoneyPartialViewModel _moneyPartialViewModel = new MoneyPartialViewModel();
+        private List<Money> _monies = new List<Money>();
+
         public ActionResult Index()
         {
             return View();
@@ -14,27 +18,28 @@ namespace MVC_SKA.Controllers
 
         public ViewResult MoneyTemplate()
         {
-            Random gen = new Random();
-            DateTime start = new DateTime(1995, 1, 1);
-            int range = (DateTime.Today - start).Days;
-            var dateTime = start.AddDays(gen.Next(range));
-
-            var moneyPartialViewModel = new MoneyPartialViewModel();
-            moneyPartialViewModel.List = new List<Money>();
+            _moneyPartialViewModel.List = _monies;
 
             for (var i = 1; i <= 50; i++)
             {
-                moneyPartialViewModel.List.Add(
+                _moneyPartialViewModel.List.Add(
                     new Money
                     {
                         Seq = i,
-                        MoneyType = gen.Next(0, 2) == 1 ? "支出" : "收入",
-                        DateTime = start.AddDays(gen.Next(range)).ToString("yyyy-MM-dd"),
-                        Count = gen.Next(1000)
+                        MoneyType = IsMoneyType(),
+                        DateTime = new DateTime(1995, 1, 1).AddDays(
+                            _random.Next((DateTime.Today - new DateTime(1995, 1, 1)).Days))
+                            .ToString("yyyy-MM-dd"),
+                        Count = _random.Next(1000)
                     });
             }
 
-            return View(moneyPartialViewModel);
+            return View(_moneyPartialViewModel);
+        }
+
+        private string IsMoneyType()
+        {
+            return _random.Next(0, 2) == 1 ? "支出" : "收入";
         }
 
         public ActionResult About()
